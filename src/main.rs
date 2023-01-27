@@ -33,10 +33,10 @@ fn get_clip(section: &str) -> Result<HashMap<&str, &str>, String> {
 }
 
 fn export_txt(clips: &HashMap<&str, HashMap<&str, &str>>) {
-    for (book_name, book_content) in clips.into_iter() {
-        let mut lines: Vec<String> = Vec::<String>::new();
+    for (book_name, book_content) in clips.iter() {
+        let mut lines: Vec<&str> = Vec::<&str>::new();
         for (_k, v) in book_content {
-            lines.push(v.to_string());
+            lines.push(v);
         }
         let mut path: PathBuf = [OUTPUT_DIR, book_name].iter().collect();
         path.set_extension("md");
