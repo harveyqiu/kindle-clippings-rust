@@ -35,7 +35,7 @@ fn get_clip(section: &str) -> Result<HashMap<&str, &str>, String> {
 fn export_txt(clips: &HashMap<&str, HashMap<&str, &str>>) {
     for (book_name, book_content) in clips.iter() {
         let mut lines: Vec<&str> = Vec::<&str>::new();
-        for (_k, v) in book_content {
+        for (_, v) in book_content {
             lines.push(v);
         }
         let mut path: PathBuf = [OUTPUT_DIR, book_name].iter().collect();
@@ -45,8 +45,8 @@ fn export_txt(clips: &HashMap<&str, HashMap<&str, &str>>) {
 }
 
 fn main() {
-    let mut clips: HashMap<&str, HashMap<&str, &str>> = HashMap::new();
     let sections: Vec<String> = get_sections("My Clippings.txt");
+    let mut clips: HashMap<&str, HashMap<&str, &str>> = HashMap::new();
     for section in &sections {
         let clip = get_clip(&section);
         match clip {
