@@ -6,10 +6,11 @@ use std::path::PathBuf;
 const BOUNDARY: &str = "==========\r\n";
 const OUTPUT_DIR: &str = "output";
 
+
 fn get_sections(path: &str) -> Vec<String> {
     let content = fs::read_to_string(path).unwrap();
-    let splited: Vec<String> = content.split(BOUNDARY).map(String::from).collect();
-    return splited;
+    let splited: Vec<String> = content.split(BOUNDARY).map(|s| s.to_owned()).collect();
+    splited
 }
 
 fn get_clip(section: &str) -> Result<HashMap<&str, &str>, String> {
@@ -19,7 +20,7 @@ fn get_clip(section: &str) -> Result<HashMap<&str, &str>, String> {
         return Err(format!("lines != 3 {:?}", lines));
     }
     book.insert("book", lines[0]);
-    let re = Regex::new(r"(\d+)-\d+").unwrap();
+    let re: Regex = Regex::new(r"(\d+)-\d+").unwrap();
     let caps = re.captures(lines[1]);
     match caps {
         Some(result) => {
@@ -33,14 +34,11 @@ fn get_clip(section: &str) -> Result<HashMap<&str, &str>, String> {
 }
 
 fn export_txt(clips: &HashMap<&str, HashMap<&str, &str>>) {
-    for (book_name, book_content) in clips.iter() {
-        let mut lines: Vec<&str> = Vec::<&str>::new();
-        for v in book_content.values() {
-            lines.push(v);
-        }
+        for (book_name, book_content) in clips.iter() {
+        let lines: Vec<&str> = book_content.values().cloned().collect();
         let mut path: PathBuf = [OUTPUT_DIR, book_name].iter().collect();
         path.set_extension("md");
-        fs::write(path, lines.join("\n\n---\n\n")).unwrap();
+        fs::write(path, lines.join("\n\n---\n\n")).expect("Failed to write file");
     }
 }
 
